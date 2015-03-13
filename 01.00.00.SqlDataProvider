@@ -1,0 +1,273 @@
+/************************************************************/
+/*****                                                  *****/
+/*****       SqlDataProvider                            *****/
+/*****       Install/Upgrade for DNNSiteGallery         *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search AND replace operation     *****/
+/*****       for {databaseOwner} AND {objectQualifier}  *****/
+/*****       or use 'SQL' FROM Host Menu AND run this.  *****/
+/*****                                                  *****/
+/************************************************************/
+
+
+IF NOT EXISTS ( SELECT  *
+                FROM    dbo.sysobjects
+                WHERE   id = OBJECT_ID(N'{databaseOwner}[{objectQualifier}GallerySites]')
+                        AND OBJECTPROPERTY(id, N'IsTable') = 1 )
+    BEGIN
+        CREATE TABLE {databaseOwner}[{objectQualifier}GallerySites]
+            (
+              [SiteID] [INT] IDENTITY(1, 1) NOT NULL ,
+              [ModuleID] [INT] NOT NULL ,
+              [UserID] [INT] NOT NULL ,
+              [URL] [NVARCHAR](250) NOT NULL ,
+              [Title] [NVARCHAR](50) NOT NULL ,
+              [Description] [NVARCHAR](2000) NULL ,
+              [Owner] [NVARCHAR](50) NULL ,
+              [OwnerURL] [NVARCHAR](250) NULL ,
+              [Thumbnail] [NVARCHAR](250) NULL ,
+              [IsActive] [BIT] NOT NULL ,
+              [CreatedByUserID] [INT] NOT NULL ,
+              [CreatedOnDate] [DATETIME] NOT NULL ,
+              [LastModifiedByUserID] [INT] NOT NULL ,
+              [LastModifiedOnDate] [DATETIME] NOT NULL
+            )
+
+    END
+GO
+
+
+/* Create primary key constraint */
+IF NOT exists (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'[PK_{objectQualifier}GallerySites]') AND OBJECTPROPERTY(id, N'IsConstraint') = 1)
+ALTER TABLE {databaseOwner}[{objectQualifier}GallerySites]
+ADD CONSTRAINT [PK_{objectQualifier}GallerySites] 
+PRIMARY KEY CLUSTERED  ([SiteID])
+GO
+
+
+/* Foreign key to Modules */
+IF NOT exists (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'[FK_{objectQualifier}GallerySites_{objectQualifier}Modules]') AND OBJECTPROPERTY(id, N'IsConstraint') = 1)
+ALTER TABLE {databaseOwner}[{objectQualifier}GallerySites] ADD 
+	CONSTRAINT [FK_{objectQualifier}GallerySites_{objectQualifier}Modules] FOREIGN KEY 
+	(
+		[ModuleID]
+	) REFERENCES {databaseOwner}[{objectQualifier}Modules] (
+		[ModuleID]
+	) ON DELETE CASCADE 
+GO
+
+
+/* Foreign key to Users */
+IF NOT exists (SELECT * FROM dbo.sysobjects WHERE id = object_id(N'[FK_{objectQualifier}GallerySites_{objectQualifier}Users]') AND OBJECTPROPERTY(id, N'IsConstraint') = 1)
+ALTER TABLE {databaseOwner}[{objectQualifier}GallerySites] ADD 
+	CONSTRAINT [FK_{objectQualifier}GallerySites_{objectQualifier}Users] FOREIGN KEY 
+	(
+		[UserID]
+	) REFERENCES {databaseOwner}[{objectQualifier}Users] (
+		[UserID]
+	) ON DELETE CASCADE
+GO
+
+
+/***** Stored Procedures *****/
+
+/* GetAllGallerySites */
+IF EXISTS (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}[{objectQualifier}GetAllGallerySites]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+DROP PROCEDURE {databaseOwner}[{objectQualifier}GetAllGallerySites]
+GO
+
+CREATE PROCEDURE {databaseOwner}[{objectQualifier}GetAllGallerySites]
+AS
+    SELECT  *
+    FROM    {databaseOwner}[{objectQualifier}GallerySites] AS GS
+            INNER JOIN {databaseOwner}[{objectQualifier}Modules] AS MD ON GS.ModuleID = MD.ModuleID
+
+GO
+
+/* GetGallerySites */
+IF EXISTS (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}[{objectQualifier}GetGallerySites]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+DROP PROCEDURE {databaseOwner}[{objectQualifier}GetGallerySites]
+GO
+
+CREATE PROCEDURE {databaseOwner}[{objectQualifier}GetGallerySites]
+    @ModuleID INT ,
+    @Rows INT ,
+    @Page INT
+AS
+    DECLARE @Total INT
+
+    SELECT  @Total = COUNT(*)
+    FROM    {databaseOwner}[{objectQualifier}GallerySites]
+    WHERE   (ModuleID = @ModuleID
+            AND IsActive = 1)
+
+    SELECT  * ,
+            @Total AS Rows
+    FROM    ( SELECT    ROW_NUMBER() OVER ( ORDER BY CreatedOnDate DESC ) AS Row ,
+                        *
+              FROM      {databaseOwner}[{objectQualifier}GallerySites]
+              WHERE     ModuleID = @ModuleID
+                        AND IsActive = 1
+            ) AS tbl
+            INNER JOIN {databaseOwner}[{objectQualifier}Modules] AS MD ON tbl.ModuleID = MD.ModuleID
+    WHERE   Row BETWEEN ( ( @Page - 1 ) * @Rows + 1 ) AND ( @Page * @Rows )
+    ORDER BY tbl.CreatedOnDate DESC
+
+GO
+
+
+/* GetGallerySitesByUser */
+IF EXISTS (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}[{objectQualifier}GetGallerySitesByUser]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+DROP PROCEDURE {databaseOwner}[{objectQualifier}GetGallerySitesByUser]
+GO
+
+CREATE PROCEDURE {databaseOwner}[{objectQualifier}GetGallerySitesByUser]
+    @ModuleID INT ,
+    @UserID INT
+AS
+    SELECT  *
+    FROM    {databaseOwner}[{objectQualifier}GallerySites]
+    WHERE   ModuleID = @ModuleID
+            AND UserID = @UserID
+    ORDER BY Title
+
+GO
+
+/* GetGallerySite */
+IF EXISTS (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}[{objectQualifier}GetGallerySite]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+DROP PROCEDURE {databaseOwner}[{objectQualifier}GetGallerySite]
+GO
+
+CREATE PROCEDURE {databaseOwner}[{objectQualifier}GetGallerySite]
+    @SiteID INT ,
+    @ModuleID INT ,
+    @UserID INT
+AS
+    SELECT  *
+    FROM    {databaseOwner}[{objectQualifier}GallerySites]
+    WHERE   SiteID = @SiteID
+            AND ModuleID = @ModuleID
+            AND UserID = @UserID
+
+GO
+
+
+/* UpdateGallerySite */
+IF EXISTS (select * from dbo.sysobjects where id = object_id(N'{databaseOwner}[{objectQualifier}UpdateGallerySite]') and OBJECTPROPERTY(id, N'IsProcedure') = 1)
+DROP PROCEDURE {databaseOwner}[{objectQualifier}UpdateGallerySite]
+GO
+
+
+CREATE PROCEDURE {databaseOwner}[{objectQualifier}UpdateGallerySite]
+    @SiteID INT ,
+    @ModuleID INT ,
+    @UserID INT ,
+    @URL NVARCHAR(250) ,
+    @Title NVARCHAR(50) ,
+    @Description NVARCHAR(2000) ,
+    @Owner NVARCHAR(50) ,
+    @OwnerURL NVARCHAR(250) ,
+    @IsActive BIT ,
+    @Thumbnail NVARCHAR(250) ,
+    @LastModifiedByUserID INT
+AS
+    IF NOT EXISTS ( SELECT  1
+                    FROM    {databaseOwner}[{objectQualifier}GallerySites]
+                    WHERE   SiteID = @SiteID )
+        BEGIN
+            INSERT  INTO {databaseOwner}[{objectQualifier}GallerySites]
+                    ( ModuleID ,
+                      UserID ,
+                      URL ,
+                      Title ,
+                      Description ,
+                      Owner ,
+                      OwnerURL ,
+                      IsActive ,
+                      Thumbnail ,
+                      CreatedByUserID ,
+                      CreatedOnDate ,
+                      LastModifiedByUserID ,
+                      LastModifiedOnDate
+                    )
+            VALUES  ( @ModuleID ,
+                      @UserID ,
+                      @URL ,
+                      @Title ,
+                      @Description ,
+                      @Owner ,
+                      @OwnerURL ,
+                      @IsActive ,
+                      @Thumbnail ,
+                      @LastModifiedByUserID ,
+                      GETDATE() ,
+                      @LastModifiedByUserID ,
+                      GETDATE()
+                    )
+
+            SELECT  @SiteID = SCOPE_IDENTITY()  
+        END
+    ELSE
+        BEGIN
+            UPDATE  {databaseOwner}[{objectQualifier}GallerySites]
+            SET     URL = @URL ,
+                    Title = @Title ,
+                    Description = @Description ,
+                    Owner = @Owner ,
+                    OwnerURL = @OwnerURL ,
+                    IsActive = @IsActive ,
+                    Thumbnail = @Thumbnail ,
+                    LastModifiedByUserID = @LastModifiedByUserID ,
+                    LastModifiedOnDate = GETDATE()
+            WHERE   SiteID = @SiteID
+                    AND ModuleID = @ModuleID
+                    AND UserID = @UserID
+        END
+
+    SELECT  @SiteID AS SiteID
+
+GO
+
+/* Activate schedule */
+
+DELETE FROM {databaseOwner}{objectQualifier}Schedule
+WHERE   TypeFullName = 'Siliqon.SiteGallery.SiteGalleryJob'
+GO
+
+INSERT  INTO {databaseOwner}[{objectQualifier}Schedule]
+        ( TypeFullName ,
+          TimeLapse ,
+          TimeLapseMeasurement ,
+          RetryTimeLapse ,
+          RetryTimeLapseMeasurement ,
+          RetainHistoryNum ,
+          AttachToEvent ,
+          CatchUpEnabled ,
+          Enabled ,
+          ObjectDependencies ,
+          Servers ,
+          CreatedByUserID ,
+          CreatedOnDate ,
+          LastModifiedByUserID ,
+          LastModifiedOnDate ,
+          FriendlyName
+        )
+VALUES  ( 'Siliqon.SiteGallery.SiteGalleryJob' ,
+          1 ,
+          'd' ,
+          0 ,
+          's' ,
+          10 ,
+          '' ,
+          0 ,
+          1 ,
+          '' ,
+          NULL ,
+          NULL ,
+          GETDATE() ,
+          NULL ,
+          GETDATE() ,
+          'Site Gallery'
+        )
+GO

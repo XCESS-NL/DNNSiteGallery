@@ -1,0 +1,147 @@
+﻿<dotnetnuke type="Package" version="5.0">
+  <packages><package name="Siliqon.SiteGallery" type="Module" version="1.0.1">
+  <friendlyName>SiteGallery</friendlyName>
+  <description>Allows you to manage a gallery of websites. </description>
+  <iconFile>SiteGallery.png</iconFile>
+  <owner>
+    <name>Siliqon Inc.</name>
+    <organization>Siliqon Inc.</organization>
+    <url>www.siliqon.com</url>
+    <email>shaun.walker@siliqon.com</email>
+  </owner>
+  <license>Copyright (c) 2015
+by Siliqon Inc.
+http://www.siliqon.com
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ 
+The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ 
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</license>
+  <releaseNotes>Initial release</releaseNotes>
+  <components>
+    <component type="Script">
+      <scripts>
+        <basePath>DesktopModules\Siliqon\SiteGallery</basePath>
+        <script type="Install">
+          <name>01.00.00.SqlDataProvider</name>
+          <version>01.00.00</version>
+        </script>
+        <script type="UnInstall">
+          <name>Uninstall.SqlDataProvider</name>
+          <version>1.0.1</version>
+        </script>
+      </scripts>
+    </component>
+    <component type="Module">
+      <desktopModule>
+        <moduleName>Siliqon.SiteGallery</moduleName>
+        <foldername>Siliqon/SiteGallery</foldername>
+        <businessControllerClass />
+        <codeSubDirectory>Siliqon/SiteGallery</codeSubDirectory>
+        <supportedFeatures />
+        <moduleDefinitions>
+          <moduleDefinition>
+            <friendlyName>Siliqon.SiteGallery</friendlyName>
+            <definitionName>Siliqon.SiteGallery</definitionName>
+            <defaultCacheTime>0</defaultCacheTime>
+            <moduleControls>
+              <moduleControl>
+                <controlKey />
+                <controlSrc>DesktopModules/Siliqon/SiteGallery/View.ascx</controlSrc>
+                <supportsPartialRendering>False</supportsPartialRendering>
+                <controlTitle />
+                <controlType>View</controlType>
+                <iconFile />
+                <helpUrl />
+                <supportsPopUps>False</supportsPopUps>
+                <viewOrder>0</viewOrder>
+              </moduleControl>
+              <moduleControl>
+                <controlKey>Edit</controlKey>
+                <controlSrc>desktopmodules/siliqon/sitegallery/Edit.ascx</controlSrc>
+                <supportsPartialRendering>False</supportsPartialRendering>
+                <controlTitle />
+                <controlType>Edit</controlType>
+                <iconFile />
+                <helpUrl />
+                <supportsPopUps>True</supportsPopUps>
+                <viewOrder>0</viewOrder>
+              </moduleControl>
+              <moduleControl>
+                <controlKey>Settings</controlKey>
+                <controlSrc>desktopmodules/siliqon/sitegallery/Settings.ascx</controlSrc>
+                <supportsPartialRendering>False</supportsPartialRendering>
+                <controlTitle />
+                <controlType>Edit</controlType>
+                <iconFile />
+                <helpUrl />
+                <supportsPopUps>True</supportsPopUps>
+                <viewOrder>0</viewOrder>
+              </moduleControl>
+            </moduleControls>
+          </moduleDefinition>
+        </moduleDefinitions>
+      </desktopModule>
+    </component>
+    <component type="File">
+      <files>
+        <basePath>App_Code\Siliqon\SiteGallery</basePath>
+        <file>
+          <name>SiteGalleryController.vb</name>
+        </file>
+        <file>
+          <name>SiteGalleryInfo.vb</name>
+        </file>
+        <file>
+          <name>SiteGalleryJob.vb</name>
+        </file>
+        <file>
+          <name>WebsiteThumbnail.vb</name>
+        </file>
+      </files>
+    </component>
+    <component type="File">
+      <files>
+        <basePath>DesktopModules\Siliqon\SiteGallery</basePath>
+        <file>
+          <name>Edit.ascx</name>
+        </file>
+        <file>
+          <name>Edit.ascx.vb</name>
+        </file>
+        <file>
+          <name>edit.png</name>
+        </file>
+        <file>
+          <name>Module.css</name>
+        </file>
+        <file>
+          <name>screenshotmachine.txt</name>
+        </file>
+        <file>
+          <name>Settings.ascx</name>
+        </file>
+        <file>
+          <name>Settings.ascx.vb</name>
+        </file>
+        <file>
+          <name>settings.png</name>
+        </file>
+        <file>
+          <name>SiteGallery.png</name>
+        </file>
+        <file>
+          <name>View.ascx</name>
+        </file>
+        <file>
+          <name>View.ascx.vb</name>
+        </file>
+        <file>
+          <name>view.png</name>
+        </file>
+      </files>
+    </component>
+  </components>
+</package></packages>
+</dotnetnuke>

@@ -1,0 +1,14 @@
+Screen Shot Generator Service
+-----------------------------
+https://www.screenshotmachine.com
+
+API URL Format:
+
+http://api.screenshotmachine.com/?key=[key]&size=[size]&format=[format]&hash=[hash]&cacheLimit=[cacheLimit]&timeout=[timeout]&url=[url]
+
+Example:
+
+http://api.screenshotmachine.com/?key=1234xx&size=X&format=JPG&cacheLimit=0&timeout=0&url=[URL]
+
+( you need to register and substitute your own key )
+

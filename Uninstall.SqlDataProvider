@@ -1,0 +1,70 @@
+/************************************************************/
+/*****              SqlDataProvider                     *****/
+/*****                                                  *****/
+/*****                                                  *****/
+/***** Note: To manually execute this script you must   *****/
+/*****       perform a search and replace operation     *****/
+/*****       for {databaseOwner} and {objectQualifier}  *****/
+/*****                                                  *****/
+/************************************************************/
+
+/** Drop schedule **/
+DELETE FROM {databaseOwner}{objectQualifier}Schedule
+WHERE   TypeFullName = 'Siliqon.SiteGallery.SiteGalleryJob'
+GO
+
+/** Drop Stored Procedures **/
+
+IF EXISTS (SELECT * FROM dbo.sysobjects 
+           WHERE id = object_id(N'{databaseOwner}[{objectQualifier}GetAllGallerySites]') 
+           AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+DROP PROCEDURE {databaseOwner}[{objectQualifier}GetAllGallerySites]
+GO
+
+IF EXISTS (SELECT * FROM dbo.sysobjects 
+           WHERE id = object_id(N'{databaseOwner}[{objectQualifier}GetGallerySite]') 
+           AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+DROP PROCEDURE {databaseOwner}[{objectQualifier}GetGallerySite]
+GO
+
+IF EXISTS (SELECT * FROM dbo.sysobjects 
+           WHERE id = object_id(N'{databaseOwner}[{objectQualifier}GetGallerySitesByUser]') 
+           AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+DROP PROCEDURE {databaseOwner}[{objectQualifier}GetGallerySitesByUser]
+GO
+
+IF EXISTS (SELECT * FROM dbo.sysobjects 
+           WHERE id = object_id(N'{databaseOwner}[{objectQualifier}GetGallerySite]') 
+           AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+DROP PROCEDURE {databaseOwner}[{objectQualifier}GetGallerySite]
+GO
+
+IF EXISTS (SELECT * FROM dbo.sysobjects 
+           WHERE id = object_id(N'{databaseOwner}[{objectQualifier}UpdateGallerySite]') 
+           AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+DROP PROCEDURE {databaseOwner}[{objectQualifier}UpdateGallerySite]
+GO
+
+IF EXISTS (SELECT * FROM dbo.sysobjects 
+           WHERE id = object_id(N'{databaseOwner}[{objectQualifier}GallerySites]') 
+           AND OBJECTPROPERTY(id, N'IsProcedure') = 1)
+DROP PROCEDURE {databaseOwner}[{objectQualifier}GallerySites]
+GO
+
+/** Drop Constraints **/
+
+IF EXISTS (SELECT * FROM dbo.sysobjects where id = object_id(N'{databaseOwner}[FK_{objectQualifier}GallerySites_{objectQualifier}Modules]') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE {databaseOwner}[{objectQualifier}GallerySites] 
+DROP CONSTRAINT FK_{objectQualifier}GallerySites_{objectQualifier}Modules
+GO
+
+IF EXISTS (SELECT * FROM dbo.sysobjects where id = object_id(N'{databaseOwner}[FK_{objectQualifier}GallerySites_{objectQualifier}Users') and OBJECTPROPERTY(id, N'IsForeignKey') = 1)
+ALTER TABLE {databaseOwner}[{objectQualifier}GallerySites] 
+DROP CONSTRAINT FK_{objectQualifier}GallerySites_{objectQualifier}Users
+GO
+
+/** DROP TABLE **/
+
+IF EXISTS (SELECT * FROM dbo.sysobjects where id = object_id(N'{databaseOwner}[{objectQualifier}GallerySites]') and OBJECTPROPERTY(id, N'IsUserTable') = 1)
+DROP TABLE {databaseOwner}[{objectQualifier}GallerySites]
+GO
